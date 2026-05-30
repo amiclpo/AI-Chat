@@ -1079,33 +1079,33 @@ export function SettingsPanel({
         </div>
 
         {/* Local Vector DB & Offline RAG parameters */}
-        <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 space-y-4">
+        <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/20 shadow-sm space-y-4">
           <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2">
             <Database className="w-4 h-4 text-indigo-500" />
             {getTranslation(language, "LOCAL_VECTOR_DB")} (Offline RAG)
           </h3>
 
-          <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800">
-            <div className="space-y-0.5">
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-150 dark:border-zinc-800">
+            <div className="space-y-0.5 pr-2">
               <h4 className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">{getTranslation(language, "LOCAL_SEMANTIC_RAG_TOGGLE")}</h4>
-              <p className="text-[10px] text-zinc-400 dark:text-zinc-500">{getTranslation(language, "INJECT_PAST_DISCUSSIONS_DESC")}</p>
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-550 leading-relaxed">{getTranslation(language, "INJECT_PAST_DISCUSSIONS_DESC")}</p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
+            <label className="relative inline-flex items-center cursor-pointer shrink-0">
               <input 
                 type="checkbox" 
                 checked={ragEnabled}
                 onChange={(e) => setRagEnabled(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-9 h-5 bg-zinc-350 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
+              <div className="w-9 h-5 bg-zinc-300 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
             </label>
           </div>
 
           {/* RAG sources limit */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-medium">
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs font-semibold">
               <span className="text-zinc-700 dark:text-zinc-300">{getTranslation(language, "RAG_CONTEXT_LIMIT")}</span>
-              <span className="font-mono text-indigo-500 dark:text-indigo-400">{ragSourceCount} messages</span>
+              <span className="font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-1.5 py-0.5 rounded text-[10px]">{ragSourceCount} messages</span>
             </div>
             <input 
               type="range" 
@@ -1115,15 +1115,15 @@ export function SettingsPanel({
               value={ragSourceCount}
               onChange={(e) => setRagSourceCount(parseInt(e.target.value))}
               disabled={!ragEnabled}
-              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 disabled:opacity-40"
+              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 disabled:opacity-45"
             />
           </div>
 
           {/* Similarity threshold limit */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-medium">
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs font-semibold">
               <span className="text-zinc-700 dark:text-zinc-300">{getTranslation(language, "SIMILARITY_THRESHOLD")}</span>
-              <span className="font-mono text-indigo-500 dark:text-indigo-400">{Math.round(ragSimilarityThreshold * 100)}%</span>
+              <span className="font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-1.5 py-0.5 rounded text-[10px]">{Math.round(ragSimilarityThreshold * 100)}%</span>
             </div>
             <input 
               type="range" 
@@ -1133,7 +1133,7 @@ export function SettingsPanel({
               value={ragSimilarityThreshold}
               onChange={(e) => setRagSimilarityThreshold(parseFloat(e.target.value))}
               disabled={!ragEnabled}
-              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 disabled:opacity-40"
+              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 disabled:opacity-45"
             />
             <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
               {getTranslation(language, "EMBEDDINGS_CONFIDENCE_HELP")}
@@ -1141,10 +1141,10 @@ export function SettingsPanel({
           </div>
 
           {/* Indexed Vector Stats */}
-          <div className="flex justify-between items-center text-xs pt-3 border-t border-zinc-100 dark:border-zinc-800/60">
+          <div className="flex justify-between items-center text-xs pt-3.5 border-t border-zinc-100 dark:border-zinc-800/60">
             <div>
               <span className="text-zinc-400 dark:text-zinc-500">{getTranslation(language, "LOCAL_VECTOR_DB")} (Index)</span>
-              <p className="text-zinc-800 dark:text-zinc-200 font-semibold font-mono text-[13px]">{vectorCount} message vectors</p>
+              <p className="text-zinc-800 dark:text-zinc-200 font-bold font-mono text-[12px]">{vectorCount} message vectors</p>
             </div>
             {vectorCount > 0 && (
               <button
@@ -1154,7 +1154,7 @@ export function SettingsPanel({
                     onClearVectorDb();
                   }
                 }}
-                className="px-2.5 py-1 text-[10px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 rounded border border-red-200 dark:border-red-900/30 transition-colors cursor-pointer font-sans"
+                className="px-3 py-1.5 text-[10px] font-bold text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900/30 transition-all cursor-pointer font-sans"
               >
                 {getTranslation(language, "INDEX_RESET_BTN")}
               </button>
@@ -1164,23 +1164,26 @@ export function SettingsPanel({
       </div>
 
       {/* Developer Documentation & Language Ingestion Hub (Mainstream Languages Support) */}
-      <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 space-y-4" id="mainstream_lang_docs_hub">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-zinc-100 dark:border-zinc-805 pb-3">
-          <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-            <BookOpen className="w-4 h-4 text-indigo-500" />
+      <div className="p-6 md:p-7 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-md shadow-sm hover:shadow-md/5 transition-all duration-300 space-y-6 relative overflow-hidden" id="mainstream_lang_docs_hub">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-600"></div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-zinc-150 dark:border-zinc-800 pb-4">
+          <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 dark:text-indigo-400">
+              <BookOpen className="w-4 h-4" />
+            </div>
             <span>{getTranslation(language, "DOCS_HUB_TITLE")}</span>
           </h3>
-          <span className="text-[9px] uppercase tracking-wider font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 px-2.5 py-0.5 rounded-full">
+          <span className="text-[9px] uppercase tracking-wider font-extrabold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full border border-indigo-100/50 dark:border-indigo-900/30">
             {getTranslation(language, "DOCS_HUB_STANDARD_MANUALS")}
           </span>
         </div>
 
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans leading-relaxed">
           {getTranslation(language, "DOCS_HUB_SUBTITLE")}
         </p>
 
         {/* Tab Selection Row */}
-        <div className="flex flex-wrap gap-1.5 p-1 rounded-lg bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-850">
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/80 border border-zinc-200/40 dark:border-zinc-850">
           {LANG_DOC_PRESETS.map((preset) => {
             const locPreset = getLocalizedPreset(preset, language);
             return (
@@ -1191,10 +1194,10 @@ export function SettingsPanel({
                   setActiveLangDocId(preset.id);
                   setDocStatusMsg(null);
                 }}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all ${
+                className={`px-3.5 py-1.8 text-xs font-semibold rounded-lg cursor-pointer transition-all duration-200 ${
                   activeLangDocId === preset.id
-                    ? "bg-indigo-600 text-white shadow-sm font-bold"
-                    : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/40 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/60"
+                    ? "bg-indigo-600 text-white shadow-sm font-bold scale-[1.02]"
+                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 hover:bg-zinc-200/50 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/40"
                 }`}
               >
                 {locPreset.name.split(" ")[0]}
@@ -1207,10 +1210,10 @@ export function SettingsPanel({
               setActiveLangDocId("custom-doc");
               setDocStatusMsg(null);
             }}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all ${
+            className={`px-3.5 py-1.8 text-xs font-semibold rounded-lg cursor-pointer transition-all duration-200 ${
               activeLangDocId === "custom-doc"
-                ? "bg-indigo-600 text-white shadow-sm font-bold"
-                : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/40 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/60"
+                ? "bg-indigo-600 text-white shadow-sm font-bold scale-[1.02]"
+                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 hover:bg-zinc-200/50 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/40"
             }`}
           >
             {getTranslation(language, "DOCS_HUB_CUSTOM_SUPPLEMENT")}
@@ -1221,11 +1224,11 @@ export function SettingsPanel({
         {activeLangDocId !== "custom-doc" ? (() => {
           const preset = getLocalizedPreset(LANG_DOC_PRESETS.find(p => p.id === activeLangDocId)!, language);
           return (
-            <div className="space-y-4" key={preset.id}>
-              <div className="p-4 rounded-lg bg-slate-50/50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-800 space-y-2">
+            <div className="space-y-5 animate-fadeIn" key={preset.id}>
+              <div className="p-4 rounded-xl bg-indigo-50/5 dark:bg-zinc-950/20 border border-zinc-200/50 dark:border-zinc-800 space-y-3 shadow-inner">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-zinc-700 dark:text-zinc-200">{preset.name}</span>
-                  <span className="text-[10px] font-medium font-mono text-indigo-500 bg-indigo-50 dark:bg-indigo-950 px-1.5 py-0.5 rounded">
+                  <span className="text-xs font-bold text-zinc-800 dark:text-zinc-150">{preset.name}</span>
+                  <span className="text-[10px] font-bold font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-100/50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-md border border-indigo-100/30 dark:border-indigo-900/10">
                     {preset.category}
                   </span>
                 </div>
@@ -1234,11 +1237,13 @@ export function SettingsPanel({
                 </p>
 
                 <div className="pt-2">
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 block mb-1.5">{getTranslation(language, "DOCS_HUB_STANDARD_PRACTICES")}</span>
-                  <ul className="space-y-1.5 text-[11px] text-zinc-650 dark:text-zinc-300">
+                  <span className="text-[10px] uppercase tracking-wider font-extrabold text-indigo-500/80 dark:text-indigo-400/80 block mb-2">{getTranslation(language, "DOCS_HUB_STANDARD_PRACTICES")}</span>
+                  <ul className="space-y-2 text-[11px] text-zinc-650 dark:text-zinc-300">
                     {preset.bestPractices.map((bp, idx) => (
-                      <li key={idx} className="flex items-start gap-1.5 leading-relaxed">
-                        <Check className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
+                      <li key={idx} className="flex items-start gap-2 leading-relaxed">
+                        <div className="rounded-full bg-indigo-50 dark:bg-indigo-950 p-0.5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5">
+                          <Check className="w-2.5 h-2.5" />
+                        </div>
                         <span>{bp}</span>
                       </li>
                     ))}
