@@ -20,11 +20,119 @@ import {
   AlertCircle,
   Copy,
   Globe,
-  ChevronLeft
+  ChevronLeft,
+  BookOpen,
+  FileText,
+  Code,
+  Cpu
 } from "lucide-react";
-import { SystemPrompt, ChatSession, ConsumptionRecord } from "../types";
+import { SystemPrompt, ChatSession, ConsumptionRecord, VectorRecord } from "../types";
 import { REF_MODELS, BUILT_IN_PROMPTS } from "../lib/data";
 import { Language, LANGUAGES, getTranslation } from "../lib/translations";
+import { localVectorDb } from "../lib/vectorDb";
+
+interface LangDocPreset {
+  id: string;
+  name: string;
+  category: string;
+  summary: string;
+  bestPractices: string[];
+  systemPrompt: string;
+  textsToEmbed: string[];
+}
+
+const LANG_DOC_PRESETS: LangDocPreset[] = [
+  {
+    id: "ts-clean",
+    name: "TypeScript (Clean Coding & ESM)",
+    category: "Web & Frontend",
+    summary: "Standard code architectures, strict static checking, properly formulated ES Modules (ESM) imports, and optimal build setups.",
+    bestPractices: [
+      "No usage of loose `any` types; prefer strict interfaces and type unions.",
+      "Strict compilations enabled like `strictNullChecks` or `noImplicitAny`.",
+      "Strict compliance with modular ES Modules (`import`/`export`) standard structure.",
+      "Proper async-await structures with unified error trapping mechanics."
+    ],
+    systemPrompt: "You are a senior TypeScript Architect. All response structures must conform precisely with strict type definitions, never use loose 'any' assertions, utilize elegant ES Modules (ESM), ensure clean separation of concerns, and include descriptive return annotations matching clean-code architectural rules.",
+    textsToEmbed: [
+      "TypeScript Clean Coding: Never declare loose or dynamic 'any' variables; enforce explicit structural interfaces or strict template generics instead. This maintains type integrity and unlocks static audit compiler verification.",
+      "ES Modules Syntax & Ingress: Always use explicit nested path imports. Avoid namespace wrapping classes in standard projects; utilize clean import/export syntax conforming directly to ECMAScript standard specs.",
+      "Async/Await Secure Patterns: Wrap multi-step promises inside try-catch structures. Never invoke asynchronous routines in an unhandled fire-and-forget style without designated fallback listeners."
+    ]
+  },
+  {
+    id: "python-pep8",
+    name: "Python (PEP 8 & Type Hints)",
+    category: "Data & Systems",
+    summary: "PEP-8 formatting constraints, rigorous type assertions (`typing`), standard error handling, and clean script packaging.",
+    bestPractices: [
+      "Adhere strictly to PEP-8 casing guidelines (snake_case for functions, CapitalCase for classes).",
+      "Explicitly annotate parameters and return types using the typing standard library.",
+      "Prevent side-effects in list comprehensions; prefer simple, legible operations.",
+      "Leverage yield generators to maintain memory efficiency when processing stream data structures."
+    ],
+    systemPrompt: "You are an expert Python Developer. Write idiomatic, highly readable Python code referencing PEP-8 style rules, comprehensive type annotations, clear docstrings, and robust exception handling using specific try-except hierarchies.",
+    textsToEmbed: [
+      "PEP 8 Styling: Code layout must use 4 spaces per indentation level. Restrict line lengths to 79 characters for supreme readability inside vertical split screens. Keep custom helper classes clean.",
+      "Python Modern Typing: Explicitly declare function signatures with standard parameters (`def compute(items: list[str]) -> dict[str, int]`). Use static variables matching PEP-484 standard specifications.",
+      "Effective Python Comprehensions: Use comprehensions strictly for simple mapping transformations. When performing complex recursive iterations, prefer clear multi-line statement blocks to maximize readability."
+    ]
+  },
+  {
+    id: "go-idiomatic",
+    name: "Go (Idiomatic Concurrency)",
+    category: "Backend & Systems",
+    summary: "Small single-purpose packages, context propagation, synchronous telemetry, explicit error returning tuple models, and structured channel designs.",
+    bestPractices: [
+      "Return explicit error interfaces as the last value of return signatures.",
+      "Propagate deadlines and cancellation states comprehensively with context.Context.",
+      "Coordinate concurrent goroutines safely utilizing select blocks and channels.",
+      "Prevent package-level globals to ensure isolation during continuous testing."
+    ],
+    systemPrompt: "You are a professional Go Developer. Code must be structured idiomatically, always handle returned error interfaces immediately ('if err != nil'), propagate 'context.Context' to downstream routines, and organize goroutines using thread-safe channel orchestration.",
+    textsToEmbed: [
+      "Idiomatic Go Structures: Keep functions thin and modular. Always handle the error return value right away. Never obscure error bubbles or leave them empty to ensure early crash-safe responses.",
+      "Go Concurrency and Channels: Do not trigger goroutines if their exit parameters remain undefined. Prevent memory lockouts by utilizing timeout checks inside channel select routines.",
+      "Context Guidelines: Pass context.Context as the first argument in all network or database-facing API interfaces. Use cancels to release dangling files or system file descriptors."
+    ]
+  },
+  {
+    id: "rust-safe",
+    name: "Rust (Memory Safety)",
+    category: "Systems Programming",
+    summary: "Satisfying borrow constraints, Option/Result matches, cargo package architectures, memory-clean paradigms, and unsafe avoidance.",
+    bestPractices: [
+      "Satisfy borrow restrictions without resorting to unneeded deep copies or cloned structures.",
+      "Employ robust pattern matching over Option/Result types; never call unsafe unwrap().",
+      "Confine raw interface references to thoroughly audited system wrapper libraries.",
+      "Manage project features using clean configurations inside and throughout Cargo.toml."
+    ],
+    systemPrompt: "You are an expert Rust Systems Engineer. All code must compile safely without unnecessary cloning of heap resources, handle errors comprehensively utilizing Result and Option enum structures, and strictly forbid 'unsafe' code declarations.",
+    textsToEmbed: [
+      "Rust Safe References: Maximize structural lifetimes over dynamic clones. Prefer referencing structures (&T) instead of copying data onto memory heaps to preserve peak processing bounds.",
+      "Rust Error Traps: Replace raw matches of '.unwrap()' with '.expect()' or delegate error propagation bubbles to call blocks utilizing '?' operator chains.",
+      "Safe vs Unsafe: Avoid utilizing unsafe code declarations unless wrapping external low-level system binaries. Lean thoroughly onto compiler verification structures to execute tasks safely."
+    ]
+  },
+  {
+    id: "cpp-modern",
+    name: "Modern C++ (Core RAII)",
+    category: "Low-level & Performance",
+    summary: "Strict RAII design, smart pointers usage (unique/shared), move constructors integration, and compile-time Concepts.",
+    bestPractices: [
+      "Explicitly enforce RAII memory management; never execute bare raw new/delete memory structures.",
+      "Shield block items inside robust std::unique_ptr or std::shared_ptr wrappers.",
+      "Enforce zero-copy transfer semantics utilizing modern rvalue move constructors.",
+      "Inject check-constraints at compile time applying generic programming concepts."
+    ],
+    systemPrompt: "You are a senior C++ Systems Developer. Implement modern C++ practices emphasizing strict RAII, memory security through dynamic smart pointer allocations, move semantic optimizations, and concept-based parameter guidelines.",
+    textsToEmbed: [
+      "Modern C++ RAII Guidelines: Enforce complete object lifecycle management. Bind raw resource acquisition directly to object setup and release them in class destructors to ensure zero leakage.",
+      "C++ Smart Memory: Always instantiate heap objects via 'std::make_unique<T>()' or 'std::make_shared<T>()' functions. Avoid using circular references and break links via 'std::weak_ptr<T>'.",
+      "Move Semantics Strategy: Design class systems with proper double-ampersand rvalue parameters. Allow values to slide efficiently across stack frames without duplicating raw allocated bytes in dynamic lists."
+    ]
+  }
+];
 
 interface SettingsPanelProps {
   // Model Config State
@@ -111,7 +219,129 @@ export function SettingsPanel({
   // Local interface states
   const [newLabel, setNewLabel] = useState("");
   const [newPromptText, setNewPromptText] = useState("");
-  
+
+  // Developer Documentation Hub & Ingestor local states
+  const [activeLangDocId, setActiveLangDocId] = useState("ts-clean");
+  const [ingestingDocId, setIngestingDocId] = useState<string | null>(null);
+  const [ingestProgress, setIngestProgress] = useState(0);
+  const [docStatusMsg, setDocStatusMsg] = useState<{ text: string; isError: boolean } | null>(null);
+  const [localVectorCount, setLocalVectorCount] = useState<number>(vectorCount);
+
+  // Sync vector count on prop update
+  useEffect(() => {
+    setLocalVectorCount(vectorCount);
+  }, [vectorCount]);
+
+  // -------------------------------------------------------------------------
+  // Mainstream Programming Languages Documentation Ingestion & Hub logic
+  // -------------------------------------------------------------------------
+  const [targetIngestSessionId, setTargetIngestSessionId] = useState<string>("");
+  const [customSupplementText, setCustomSupplementText] = useState<string>("");
+
+  useEffect(() => {
+    if (sessions && sessions.length > 0 && !targetIngestSessionId) {
+      setTargetIngestSessionId(sessions[0].id);
+    }
+  }, [sessions, targetIngestSessionId]);
+
+  const handleIngestDocPreset = async (preset: LangDocPreset, isCustomOnly = false) => {
+    if (!targetIngestSessionId) {
+      setDocStatusMsg({
+        text: "Please select/create a Target Conversation session to store these RAG documentation vectors.",
+        isError: true
+      });
+      return;
+    }
+
+    const chunks = isCustomOnly
+      ? customSupplementText.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 10)
+      : preset.textsToEmbed;
+
+    if (chunks.length === 0) {
+      setDocStatusMsg({
+        text: isCustomOnly ? "Please enter some custom content in paragraphs to ingest." : "No structured documentation chunks found.",
+        isError: true
+      });
+      return;
+    }
+
+    setIngestingDocId(preset.id);
+    setIngestProgress(0);
+    setDocStatusMsg(null);
+
+    let successCount = 0;
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (geminiApiKey) headers["x-gemini-key"] = geminiApiKey;
+      if (openaiApiKey) headers["x-openai-key"] = openaiApiKey;
+      if (openaiBaseUrl) headers["x-openai-base"] = openaiBaseUrl;
+      if (anthropicApiKey) headers["x-anthropic-key"] = anthropicApiKey;
+      if (deepseekApiKey) headers["x-deepseek-key"] = deepseekApiKey;
+
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        
+        const res = await fetch("/api/embed", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ texts: [chunk] }),
+        });
+
+        const data = await res.json();
+        if (data.success && data.embeddings) {
+          const vector: number[] = Array.isArray(data.embeddings[0]) ? data.embeddings[0] : data.embeddings;
+          
+          const vectorRecord: VectorRecord = {
+            id: crypto.randomUUID(),
+            chatId: targetIngestSessionId,
+            messageId: crypto.randomUUID(),
+            text: `Manual Reference [${preset.name}]: ${chunk}`,
+            embedding: vector,
+            timestamp: new Date().toISOString()
+          };
+
+          await localVectorDb.storeVector(vectorRecord);
+          successCount++;
+        }
+        setIngestProgress(i + 1);
+      }
+
+      const totalRecordCount = await localVectorDb.getRecordCount();
+      setLocalVectorCount(totalRecordCount);
+      
+      setDocStatusMsg({
+        text: `Success! Embedded & indexed ${successCount}/${chunks.length} dense documentation vectors for ${preset.name} into target RAG store.`,
+        isError: false
+      });
+      if (isCustomOnly) {
+        setCustomSupplementText("");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setDocStatusMsg({
+        text: `Ingestion failed during API embeddings construction: ${err.message}`,
+        isError: true
+      });
+    } finally {
+      setIngestingDocId(null);
+    }
+  };
+
+  const handleRegisterPersonaPrompt = (preset: LangDocPreset) => {
+    try {
+      onAddCustomPrompt(preset.name + " Persona", preset.systemPrompt);
+      setDocStatusMsg({
+        text: `Successfully registered specialized '${preset.name} Persona' system prompt option! You can now select this persona configuration for any session.`,
+        isError: false
+      });
+    } catch (err: any) {
+      setDocStatusMsg({
+        text: `Could not register custom persona: ${err.message}`,
+        isError: true
+      });
+    }
+  };
+
   // Code Key Sync State
   const [syncKey, setSyncKey] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
@@ -646,6 +876,218 @@ export function SettingsPanel({
               </button>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Developer Documentation & Language Ingestion Hub (Mainstream Languages Support) */}
+      <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 space-y-4" id="mainstream_lang_docs_hub">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-zinc-100 dark:border-zinc-805 pb-3">
+          <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+            <BookOpen className="w-4 h-4 text-indigo-500" />
+            <span>Developer Documentation & Language Ingestion Hub</span>
+          </h3>
+          <span className="text-[9px] uppercase tracking-wider font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 px-2.5 py-0.5 rounded-full">
+            Standard Reference Manuals
+          </span>
+        </div>
+
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans">
+          Supercharge your offline assistant RAG database with mainstream programming specifications, style checkers, clean coding standards, exception metrics, and language standard libraries.
+        </p>
+
+        {/* Tab Selection Row */}
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-lg bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-850">
+          {LANG_DOC_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => {
+                setActiveLangDocId(preset.id);
+                setDocStatusMsg(null);
+              }}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all ${
+                activeLangDocId === preset.id
+                  ? "bg-indigo-600 text-white shadow-sm font-bold"
+                  : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/40 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/60"
+              }`}
+            >
+              {preset.name.split(" ")[0]}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveLangDocId("custom-doc");
+              setDocStatusMsg(null);
+            }}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all ${
+              activeLangDocId === "custom-doc"
+                ? "bg-indigo-600 text-white shadow-sm font-bold"
+                : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/40 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/60"
+            }`}
+          >
+            Custom Supplement
+          </button>
+        </div>
+
+        {/* Selected Preset Details Box */}
+        {activeLangDocId !== "custom-doc" ? (() => {
+          const preset = LANG_DOC_PRESETS.find(p => p.id === activeLangDocId)!;
+          return (
+            <div className="space-y-4" key={preset.id}>
+              <div className="p-4 rounded-lg bg-slate-50/50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-zinc-700 dark:text-zinc-200">{preset.name}</span>
+                  <span className="text-[10px] font-medium font-mono text-indigo-500 bg-indigo-50 dark:bg-indigo-950 px-1.5 py-0.5 rounded">
+                    {preset.category}
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-sans">
+                  {preset.summary}
+                </p>
+
+                <div className="pt-2">
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 block mb-1.5">Standard Style Checksheets & Practices</span>
+                  <ul className="space-y-1.5 text-[11px] text-zinc-650 dark:text-zinc-300">
+                    {preset.bestPractices.map((bp, idx) => (
+                      <li key={idx} className="flex items-start gap-1.5 leading-relaxed">
+                        <Check className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
+                        <span>{bp}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Action Operations Board */}
+              <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/40 dark:bg-zinc-900/10 space-y-3.5">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">Core Target Dialog Chat</label>
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500">Specify which conversation session to ingress guidelines & checksheet RAG storage.</p>
+                  </div>
+                  <select
+                    value={targetIngestSessionId}
+                    onChange={(e) => setTargetIngestSessionId(e.target.value)}
+                    className="p-1 px-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none min-w-[200px]"
+                  >
+                    {sessions.map((s) => (
+                      <option key={s.id} value={s.id}>{s.title || "Untitled"}</option>
+                    ))}
+                    {sessions.length === 0 && (
+                      <option value="">No Active Sessions Available</option>
+                    )}
+                  </select>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/60 font-sans">
+                  <button
+                    type="button"
+                    disabled={!!ingestingDocId || !targetIngestSessionId}
+                    onClick={() => handleIngestDocPreset(preset)}
+                    className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-40 select-none transition-colors"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Incorporate documentation as local RAG</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRegisterPersonaPrompt(preset)}
+                    className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-800 dark:text-zinc-200 rounded-lg text-xs font-semibold border border-zinc-200 dark:border-zinc-700 cursor-pointer select-none transition-colors"
+                  >
+                    <Cpu className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>Configure Chat Persona System Prompt</span>
+                  </button>
+                </div>
+
+                {ingestingDocId === preset.id && (
+                  <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/10 border border-indigo-100 dark:border-indigo-900/30 rounded-lg space-y-2">
+                    <div className="flex justify-between text-[11px] font-bold text-indigo-600 dark:text-indigo-400 font-mono">
+                      <span className="flex items-center gap-1.5">
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        Embedding Language References...
+                      </span>
+                      <span>{ingestProgress} / {preset.textsToEmbed.length} units ({Math.round((ingestProgress/preset.textsToEmbed.length)*100)}%)</span>
+                    </div>
+                    <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-indigo-500 h-1.5 rounded-full transition-all duration-300" 
+                        style={{ width: `${(ingestProgress / preset.textsToEmbed.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })() : (
+          <div className="space-y-4">
+            <div className="p-4 rounded-lg bg-slate-50/50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-800 space-y-3">
+              <div>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-200 block">Custom Language Supplementary Material</label>
+                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                  Paste any third-party framework stylebooks, official developer manuals, or libraries documentation below. Separate paragraphs using a blank line.
+                </p>
+              </div>
+              <textarea
+                value={customSupplementText}
+                onChange={(e) => setCustomSupplementText(e.target.value)}
+                placeholder={`-- Example --\n\nFastAPI Style Guidelines: Prefer Async route endpoints over standard Sync interfaces when launching non-blocking operations.\n\nSvelteKit Store Rules: Export writable states with safe unsubscribe calls.`}
+                className="w-full h-[120px] p-2.5 text-xs font-mono rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
+              />
+
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2">
+                <select
+                  value={targetIngestSessionId}
+                  onChange={(e) => setTargetIngestSessionId(e.target.value)}
+                  className="p-1 px-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none min-w-[200px]"
+                >
+                  {sessions.map((s) => (
+                    <option key={s.id} value={s.id}>{s.title || "Untitled"}</option>
+                  ))}
+                  {sessions.length === 0 && (
+                    <option value="">No Active Sessions</option>
+                  )}
+                </select>
+
+                <button
+                  type="button"
+                  disabled={!!ingestingDocId || !targetIngestSessionId || !customSupplementText.trim()}
+                  onClick={() => handleIngestDocPreset({
+                    id: "custom-doc",
+                    name: "Custom Supplementary Docs",
+                    category: "User Uploaded",
+                    summary: "",
+                    bestPractices: [],
+                    systemPrompt: "",
+                    textsToEmbed: []
+                  }, true)}
+                  className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-40 transition-colors font-sans"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Index Custom Docs to Vector Database</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Local Vector Index Ingestion Logs */}
+        {docStatusMsg && (
+          <div className={`p-3 rounded-lg text-[11px] leading-relaxed flex items-start gap-2 ${docStatusMsg.isError ? "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border border-red-200" : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border border-emerald-200"}`}>
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{docStatusMsg.text}</span>
+          </div>
+        )}
+
+        {/* Synchronized Live Index Counter */}
+        <div className="flex items-center justify-between text-xs p-3.5 rounded-lg border border-zinc-150 dark:border-zinc-850/80 bg-zinc-50/50 dark:bg-zinc-950/30">
+          <div className="space-y-0.5">
+            <span className="text-[10px] text-zinc-400 uppercase font-mono block">Relational Offline RAG Engine Vector Bank</span>
+            <span className="text-zinc-800 dark:text-zinc-250 font-bold font-mono text-[13px]">{localVectorCount} Reference Guideline Vectors Loaded</span>
+          </div>
+          <span className="text-[10px] text-zinc-400 font-mono">Updates live</span>
         </div>
       </div>
 
