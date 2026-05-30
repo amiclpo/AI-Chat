@@ -1,0 +1,6 @@
+{
+  "name": "AI Chat & Local RAG Assistant",
+  "description": "An Android-inspired personal AI chat application with local vector database search (RAG), customizable system prompts, consumption statistics, and cross-platform sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
