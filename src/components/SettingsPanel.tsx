@@ -134,6 +134,290 @@ const LANG_DOC_PRESETS: LangDocPreset[] = [
   }
 ];
 
+function getLocalizedPreset(preset: LangDocPreset, lang: Language): LangDocPreset {
+  if (lang === "zh") {
+    switch (preset.id) {
+      case "ts-clean":
+        return {
+          ...preset,
+          name: "TypeScript (整洁代码与 ESM)",
+          category: "前端与网页开发",
+          summary: "标准代码架构、严格静态类型检查、格式正确的 ES 模块 (ESM) 导入规范，以及最佳构建体系配置。",
+          bestPractices: [
+            "绝不声明、不使用任何宽松的 `any` 变量；优先定义严格的 Interface 接口或联合类型 (Unions)；",
+            "在项目中开启严格编译检查，例如启用 `strictNullChecks` 或 `noImplicitAny`等配置；",
+            "严格遵循模块化的 ES Modules (`import`/`export`) 标准进行工程文件设计；",
+            "使用标准的 Async/Await 异步等待逻辑结构，并配合统一的异常拦截机制。"
+          ]
+        };
+      case "python-pep8":
+        return {
+          ...preset,
+          name: "Python (PEP 8 规范与类型提示)",
+          category: "数据科学与系统后端",
+          summary: "PEP-8 格式编排约束、极其严格的函数参数类型提示 (typing 标准库)、精细的报错捕捉与干净的依赖声明包管理。",
+          bestPractices: [
+            "严格遵守 PEP-8 命名与拼写规范 (函数使用 snake_case 下划线，类名使用 CapitalCase)；",
+            "在所有函数边界显式声明参数和返回值类型 (例如：`-> dict[str, int]`)；",
+            "避免在列表推导式中编写包含副作用的语句，保持操作简单直接及高可读性；",
+            "在大体积数据流进行流式迭代处理时，合理采用 yield 生成器以降低内存空间开销。"
+          ]
+        };
+      case "go-idiomatic":
+        return {
+          ...preset,
+          name: "Go (标准并发与管道流)",
+          category: "高并发后端与云原生",
+          summary: "极简单一职责包划分、Context 取消与死期扩散规则、显式返回错误 (err) 的双返回值元组及信道协作。",
+          bestPractices: [
+            "始终遵循将显式 error 接口置于底层函数签名返回值的最后一项位置来传递；",
+            "将具有超时属性的 `context.Context` 扩散穿透至后续调用的所有微服务或背景工作携程中；",
+            "使用 select 选择项逻辑搭配通道携手调度并发，规避死锁并保证消息的单向安全收发行为；",
+            "禁止声明全局可见的程序共享变量，避免并发写冲突并且确保单元测试具有高隔离性。"
+          ]
+        };
+      case "rust-safe":
+        return {
+          ...preset,
+          name: "Rust (内存所有权与生命周期控制)",
+          category: "安全系统级开发",
+          summary: "完美驾驭 Rust 借用检查器、灵活使用 Option/Result 枚举、模块化的 Cargo 配套架构、无 GC 内存安全范式。",
+          bestPractices: [
+            "完全满足 Rust 所有权借用限制约束，避免无谓和大量的深克隆 or 不必要的内存复制；",
+            "利用模式匹配优雅处理 Option/Result 枚举，绝不正向硬编码执行 unsafe 级的 `.unwrap()`；",
+            "将低层直接指涉或不安全的代码，限制在高度隔离、通过安全性审计的标准包装类库中；",
+            "在 Cargo.toml 依赖定义中完美划分和解耦不同功能的开关特性参数 (Features)。"
+          ]
+        };
+      case "cpp-modern":
+        return {
+          ...preset,
+          name: "Modern C++ (核心 RAII 机制)",
+          category: "底层计算与高性能",
+          summary: "安全系统代码规范。严格的 RAII 资源所有权设计，智能指针全面替代裸指针，右值引用移动语义避免任何不必要的深度内存拷贝。",
+          bestPractices: [
+            "显式强制实施 RAII 资源生命周期绑定设计，避免在业务代码中使用裸 new/delete 操作；",
+            "使用 `std::unique_ptr` 或 `std::shared_ptr` 安全封装所有动态分配的堆区对象资源；",
+            "应用右值引用及移动语义机制实现托管内存的零拷贝快速装转与堆段字节搬卸；",
+            "在模板编程中使用 C++20 Concepts 特性在编译期进行类型约束与前置守卫断言检测。"
+          ]
+        };
+    }
+  }
+
+  if (lang === "es") {
+    switch (preset.id) {
+      case "ts-clean":
+        return {
+          ...preset,
+          name: "TypeScript (Código Limpio y ESM)",
+          category: "Desarrollo Web & Frontend",
+          summary: "Arquitecturas de código estándar, verificación estática rigurosa, formatación correcta de importaciones ES Modules (ESM) y configuraciones óptimas de compilación.",
+          bestPractices: [
+            "No use tipos laxos `any`; prefiera interfaces estrictas y uniones de tipos.",
+            "Habilite compilaciones estrictas como `strictNullChecks` o `noImplicitAny`.",
+            "Cumpla de manera estricta con la estructura estándar de ES Modules (`import`/`export`).",
+            "Estructuración adecuada de async/await con un sistema unificado de captura de errores."
+          ]
+        };
+      case "python-pep8":
+        return {
+          ...preset,
+          name: "Python (PEP 8 & Pistas de Tipo)",
+          category: "Datos & Sistemas",
+          summary: "Restricciones de formato PEP-8, anotaciones de tipo rigurosa (`typing`), manejo estandarizado de excepciones y empaquetado de secuencias de comandos limpio.",
+          bestPractices: [
+            "Adhiérase a las pautas de nomenclatura PEP-8 (snake_case para funciones, CapitalCase para clases).",
+            "Anote los parámetros y valores de retorno con la librería estándar de tipado (`typing`).",
+            "Evite efectos secundarios en comprensiones de listas; prefiera operaciones legibles.",
+            "Use generadores (yield) para mantener la eficiencia de memoria en el procesamiento de flujos de datos."
+          ]
+        };
+      case "go-idiomatic":
+        return {
+          ...preset,
+          name: "Go (Concurrencia Idiomática)",
+          category: "Backend & Sistemas",
+          summary: "Paquetes pequeños de un solo propósito, propagación de contexto, telemetría síncrona, retorno de tuplas de error explícitas y canales estructurados.",
+          bestPractices: [
+            "Devuelva interfaces de error explícitas como la última variable en las firmas de funciones.",
+            "Propague límites de tiempo y estados de cancelación de manera exhaustiva con context.Context.",
+            "Coordine goroutines de forma segura utilizando bloques select y canales.",
+            "Evite variables globales para garantizar aislamiento durante las fases de pruebas unitarias."
+          ]
+        };
+      case "rust-safe":
+        return {
+          ...preset,
+          name: "Rust (Seguridad de Memoria)",
+          category: "Programación de Sistemas",
+          summary: "Satisfacción de restricciones del borrow checker, gestión de Option/Result de forma correcta y prevención de bloques unsafe.",
+          bestPractices: [
+            "Evite copias profundas redundantes o el uso excesivo de variables duplicadas.",
+            "Prefiera realizar búsquedas mediante pattern matching sobre enums Option/Result; jamás escriba .unwrap() sin control.",
+            "Limite las referencias en bruto a módulos estancos que contengan lógica auditada.",
+            "Administre el estado de compilaciones opcionales cómodamente en el archivo Cargo.toml."
+          ]
+        };
+      case "cpp-modern":
+        return {
+          ...preset,
+          name: "Modern C++ (Core RAII)",
+          category: "Bajo Nivel & Rendimiento",
+          summary: "Gestión de memoria estricta con filosofía RAII, uso inteligente de punteros std::unique_ptr/std::shared_ptr y semántica de movimiento.",
+          bestPractices: [
+            "Enforce la gestión de recursos de adquisición RAII; prohíba el empleo directo de operaciones new/delete.",
+            "Asegure la asignación de variables en punteros std::unique_ptr o std::shared_ptr según sea pertinente.",
+            "Optimice las operaciones de copia en memoria utilizando constructores de movimiento (move).",
+            "Introduzca restricciones y validaciones sólidas en tiempo de compilación utilizando Concepts de plantillas."
+          ]
+        };
+    }
+  }
+
+  if (lang === "ja") {
+    switch (preset.id) {
+      case "ts-clean":
+        return {
+          ...preset,
+          name: "TypeScript (クリーンコード & ESM)",
+          category: "ウェブ & フロントエンド",
+          summary: "一般的なコードアーキテクチャ、厳格な静的検証、正しく構成されたESモジュール（ESM）読み込み、および理想的なビルド設定。",
+          bestPractices: [
+            "曖昧な`any`型の使用を完全に排除し、厳格なインターフェースや共用体（Unions）を採用します。",
+            "`strictNullChecks` や `noImplicitAny` などの厳格コンパイル規定を有効化します。",
+            "モジュール式ES Modules（`import`/`export`）の標準仕様に正確に準拠します。",
+            "適切なasync-await記述と例外捕捉のための標準的なTry-Catch階層を構築します。"
+          ]
+        };
+      case "python-pep8":
+        return {
+          ...preset,
+          name: "Python (PEP 8 & 型ヒント)",
+          category: "データ & バックエンド",
+          summary: "PEP-8におけるレイアウト等制約事項、厳格な型アノテーション規程（`typing`）、共通例外パターン、およびクリーンな環境管理。",
+          bestPractices: [
+            "PEP-8の命名規則（関数名には snake_case、クラス名には CapitalCase）に正確に従います。",
+            "`typing`ライブラリ等を用い、引数および関数の戻り値に対して明示的な型表示を強制します。",
+            "リスト内包表記内部で副作用（状態変更）を発生させる行為を禁止し、可読性を高めます。",
+            "大規模なストリームデータを扱う処理では yield ジェネレータを採用し、ピーク時メモリを抑制します。"
+          ]
+        };
+      case "go-idiomatic":
+        return {
+          ...preset,
+          name: "Go (慣用的並行処理)",
+          category: "バックエンド & インフラ",
+          summary: "疎結合で機能特化したパッケージ境界、Contextオブジェクト転送規則、明示的なerror返しタプル構成、およびチャネル協調。",
+          bestPractices: [
+            "常に関数実行時の最後の戻り値パラメータとして明示的にerrorインタフェースを定義し、即座に評価します。",
+            "`context.Context`をダウンストリーム全タスクに正しく引き回し、ネットワーク等タイムアウトや中断を全スレッド波及します。",
+            "select分岐、チャネル同期などを組み合わせ、Goroutineリソースのリークやデッドロックを防止します。",
+            "並列衝突発生やテスト影響をなくすため、グローバル領域における変更可能変数の宣言を完全排除します。"
+          ]
+        };
+      case "rust-safe":
+        return {
+          ...preset,
+          name: "Rust (メモリ安全性検証)",
+          category: "システムプログラミング",
+          summary: "Rustコンパイラ借用チェッカー仕様適合、確実なOption/Resultパターンチェック、Cargo等依存仕様最適化、unsafe不要哲学。",
+          bestPractices: [
+            "冗長なメモリコピーや余分な `.clone()` を排し、不変または可変参照ルール（&T/&mut T）に素直に適合させます。",
+            "OptionやResult型に対して丁寧なマッチ判定等の例外処置を行い、不確定状況下での `.unwrap()` 呼び出しは避けます。",
+            "必要な生のAPI等外部呼び出し等は、完全に安全性が立証されたコンポーネントまたは静的ハンドラでラップします。",
+            "Cargo.toml を用いて有効無効といった制御やモジュールの肥大化を防ぎ、最適な分割を構築します。"
+          ]
+        };
+      case "cpp-modern":
+        return {
+          ...preset,
+          name: "Modern C++ (コア RAII 設計)",
+          category: "低レイヤ性能 & 計算処理",
+          summary: "徹底された資源管理（RAII概念）、生ポインタ全廃によるスマートポインタ一元化、高速化のための移動（Move）コンストラクタ適用、Concepts活用。",
+          bestPractices: [
+            "メモリやファイルの安全性を保証するRAIIライフサイクルを導入し、裸のnew/delete命令は書かないようにします。",
+            "ローカルで完結する資源は `std::unique_ptr` 等を活用し、役割境界を完全に定義します。",
+            "大容量配列或いは構造体等のオブジェクト移送、返却のために、右値参照を用いたMoveセマンティクス最適化を採用します。",
+            "テンプレートに対してC++20 Conceptsなどコンパイル時制限をかけ、意図しない定義エラーを検知します。"
+          ]
+        };
+    }
+  }
+
+  if (lang === "fr") {
+    switch (preset.id) {
+      case "ts-clean":
+        return {
+          ...preset,
+          name: "TypeScript (Clean Coding & ESM)",
+          category: "Web & Frontend",
+          summary: "Architectures de code standard, vérification statique stricte, modules ES (ESM) correctement formulés et configurations de build optimales.",
+          bestPractices: [
+            "Pas d'utilisation de types flous `any`; préférez des interfaces strictes et des Unions.",
+            "Activez les directives strictes du compilateur style `strictNullChecks` ou `noImplicitAny`.",
+            "Respect strict de la structure standard d'import/export d'ES Modules.",
+            "Utilisation correcte de structures async-await avec capture d'erreurs centrale."
+          ]
+        };
+      case "python-pep8":
+        return {
+          ...preset,
+          name: "Python (PEP 8 & Pistes de Type)",
+          category: "Données & Systèmes",
+          summary: "Contraintes de formatage PEP-8, annotations de type explicites (`typing`), gestion des exceptions normalisée.",
+          bestPractices: [
+            "Respect absolu des règles de style de nommage PEP-8 (snake_case pour les fonctions, CapitalCase pour les classes).",
+            "Annotez explicitement les signatures de fonctions à l'aide de la bibliothèque standard `typing`.",
+            "Évitez les effets secondaires dans les compréhensions de listes pour préserver la lisibilité.",
+            "Utilisez les générateurs (yield) pour limiter l'utilisation de la mémoire vive sur les flux."
+          ]
+        };
+      case "go-idiomatic":
+        return {
+          ...preset,
+          name: "Go (Concurrencia Idiomatique)",
+          category: "Backend & Systèmes",
+          summary: "Packages micro-ciblés, propagation de contextes, retours d'interfaces d'erreur explicites et pipelines de communication.",
+          bestPractices: [
+            "Renvoyez une variable d'erreur explicite en dernière position de signature de méthode.",
+            "Propagez les contextes d'annulation et de délais de manière transparente via context.Context.",
+            "Coordonnez les goroutines légères en toute sécurité via des structures select et des canaux.",
+            "Interdisez l'utilisation de variables globales pour isoler pleinement les tests unitaires."
+          ]
+        };
+      case "rust-safe":
+        return {
+          ...preset,
+          name: "Rust (Sécurité Mémoire)",
+          category: "Programmation Système",
+          summary: "Vérification stricte de l'emprunt d'emprunt, gestion propre d'Option/Result et interdiction d'unsafe.",
+          bestPractices: [
+            "Limitez les copies profondes redondantes en privilégiant le passage par référence (&T).",
+            "Interdisez l'utilisation directe de `.unwrap()`; gérez systématiquement les exceptions sur Option/Result.",
+            "Isolez la manipulation de pointeurs système dans des modules étanches audités.",
+            "Administrez les fonctionnalités conditionnelles via Cargo.toml et les features."
+          ]
+        };
+      case "cpp-modern":
+        return {
+          ...preset,
+          name: "Modern C++ (Core RAII)",
+          category: "Bas niveau & Performance",
+          summary: "Philosophie de gestion des ressources RAII, conteneurs intelligents std::unique_ptr/std::shared_ptr et optimisation du mouvement.",
+          bestPractices: [
+            "Garantissez le cycle de vie par RAII; bannissez l'utilisation d'allocations via de simples new/delete.",
+            "Déléguez la gestion mémoire à `std::unique_ptr` ou `std::shared_ptr`.",
+            "Activez les constructeurs de mouvement rvalue pour s'affranchir des copies d'octets redondantes.",
+            "Formulez des contraintes de gabarits lors de la compilation via Concepts."
+          ]
+        };
+    }
+  }
+
+  return preset;
+}
+
 interface SettingsPanelProps {
   // Model Config State
   temperature: number;
@@ -884,36 +1168,39 @@ export function SettingsPanel({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-zinc-100 dark:border-zinc-805 pb-3">
           <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
             <BookOpen className="w-4 h-4 text-indigo-500" />
-            <span>Developer Documentation & Language Ingestion Hub</span>
+            <span>{getTranslation(language, "DOCS_HUB_TITLE")}</span>
           </h3>
           <span className="text-[9px] uppercase tracking-wider font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 px-2.5 py-0.5 rounded-full">
-            Standard Reference Manuals
+            {getTranslation(language, "DOCS_HUB_STANDARD_MANUALS")}
           </span>
         </div>
 
         <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans">
-          Supercharge your offline assistant RAG database with mainstream programming specifications, style checkers, clean coding standards, exception metrics, and language standard libraries.
+          {getTranslation(language, "DOCS_HUB_SUBTITLE")}
         </p>
 
         {/* Tab Selection Row */}
         <div className="flex flex-wrap gap-1.5 p-1 rounded-lg bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-850">
-          {LANG_DOC_PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              onClick={() => {
-                setActiveLangDocId(preset.id);
-                setDocStatusMsg(null);
-              }}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all ${
-                activeLangDocId === preset.id
-                  ? "bg-indigo-600 text-white shadow-sm font-bold"
-                  : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/40 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/60"
-              }`}
-            >
-              {preset.name.split(" ")[0]}
-            </button>
-          ))}
+          {LANG_DOC_PRESETS.map((preset) => {
+            const locPreset = getLocalizedPreset(preset, language);
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => {
+                  setActiveLangDocId(preset.id);
+                  setDocStatusMsg(null);
+                }}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all ${
+                  activeLangDocId === preset.id
+                    ? "bg-indigo-600 text-white shadow-sm font-bold"
+                    : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/40 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/60"
+                }`}
+              >
+                {locPreset.name.split(" ")[0]}
+              </button>
+            );
+          })}
           <button
             type="button"
             onClick={() => {
@@ -926,13 +1213,13 @@ export function SettingsPanel({
                 : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-200/40 dark:hover:text-zinc-200 dark:hover:bg-zinc-900/60"
             }`}
           >
-            Custom Supplement
+            {getTranslation(language, "DOCS_HUB_CUSTOM_SUPPLEMENT")}
           </button>
         </div>
 
         {/* Selected Preset Details Box */}
         {activeLangDocId !== "custom-doc" ? (() => {
-          const preset = LANG_DOC_PRESETS.find(p => p.id === activeLangDocId)!;
+          const preset = getLocalizedPreset(LANG_DOC_PRESETS.find(p => p.id === activeLangDocId)!, language);
           return (
             <div className="space-y-4" key={preset.id}>
               <div className="p-4 rounded-lg bg-slate-50/50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-800 space-y-2">
@@ -947,7 +1234,7 @@ export function SettingsPanel({
                 </p>
 
                 <div className="pt-2">
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 block mb-1.5">Standard Style Checksheets & Practices</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 block mb-1.5">{getTranslation(language, "DOCS_HUB_STANDARD_PRACTICES")}</span>
                   <ul className="space-y-1.5 text-[11px] text-zinc-650 dark:text-zinc-300">
                     {preset.bestPractices.map((bp, idx) => (
                       <li key={idx} className="flex items-start gap-1.5 leading-relaxed">
@@ -963,8 +1250,8 @@ export function SettingsPanel({
               <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/40 dark:bg-zinc-900/10 space-y-3.5">
                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                   <div>
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">Core Target Dialog Chat</label>
-                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500">Specify which conversation session to ingress guidelines & checksheet RAG storage.</p>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">{getTranslation(language, "DOCS_HUB_TARGET_SESSION")}</label>
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500">{getTranslation(language, "DOCS_HUB_TARGET_SESSION_DESC")}</p>
                   </div>
                   <select
                     value={targetIngestSessionId}
@@ -972,10 +1259,10 @@ export function SettingsPanel({
                     className="p-1 px-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none min-w-[200px]"
                   >
                     {sessions.map((s) => (
-                      <option key={s.id} value={s.id}>{s.title || "Untitled"}</option>
+                      <option key={s.id} value={s.id}>{s.title || getTranslation(language, "UNTITLED_CHAT")}</option>
                     ))}
                     {sessions.length === 0 && (
-                      <option value="">No Active Sessions Available</option>
+                      <option value="">{getTranslation(language, "DOCS_HUB_NO_ACTIVE_SESSIONS_AVAIL")}</option>
                     )}
                   </select>
                 </div>
@@ -988,7 +1275,7 @@ export function SettingsPanel({
                     className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-40 select-none transition-colors"
                   >
                     <Upload className="w-3.5 h-3.5" />
-                    <span>Incorporate documentation as local RAG</span>
+                    <span>{getTranslation(language, "DOCS_HUB_INCORPORATE_RAG")}</span>
                   </button>
 
                   <button
@@ -997,7 +1284,7 @@ export function SettingsPanel({
                     className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-800 dark:text-zinc-200 rounded-lg text-xs font-semibold border border-zinc-200 dark:border-zinc-700 cursor-pointer select-none transition-colors"
                   >
                     <Cpu className="w-3.5 h-3.5 text-indigo-500" />
-                    <span>Configure Chat Persona System Prompt</span>
+                    <span>{getTranslation(language, "DOCS_HUB_CONFIGURE_PERSONA")}</span>
                   </button>
                 </div>
 
@@ -1006,7 +1293,7 @@ export function SettingsPanel({
                     <div className="flex justify-between text-[11px] font-bold text-indigo-600 dark:text-indigo-400 font-mono">
                       <span className="flex items-center gap-1.5">
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        Embedding Language References...
+                        {getTranslation(language, "DOCS_HUB_EMBEDDING_PROGRESS")}
                       </span>
                       <span>{ingestProgress} / {preset.textsToEmbed.length} units ({Math.round((ingestProgress/preset.textsToEmbed.length)*100)}%)</span>
                     </div>
@@ -1025,9 +1312,9 @@ export function SettingsPanel({
           <div className="space-y-4">
             <div className="p-4 rounded-lg bg-slate-50/50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-800 space-y-3">
               <div>
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-200 block">Custom Language Supplementary Material</label>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-200 block">{getTranslation(language, "DOCS_HUB_CUSTOM_SUPPLEMENT_MATERIAL")}</label>
                 <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                  Paste any third-party framework stylebooks, official developer manuals, or libraries documentation below. Separate paragraphs using a blank line.
+                  {getTranslation(language, "DOCS_HUB_CUSTOM_SUPPLEMENT_DESC")}
                 </p>
               </div>
               <textarea
@@ -1044,10 +1331,10 @@ export function SettingsPanel({
                   className="p-1 px-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none min-w-[200px]"
                 >
                   {sessions.map((s) => (
-                    <option key={s.id} value={s.id}>{s.title || "Untitled"}</option>
+                    <option key={s.id} value={s.id}>{s.title || getTranslation(language, "UNTITLED_CHAT")}</option>
                   ))}
                   {sessions.length === 0 && (
-                    <option value="">No Active Sessions</option>
+                    <option value="">{getTranslation(language, "DOCS_HUB_NO_ACTIVE_SESSIONS")}</option>
                   )}
                 </select>
 
@@ -1066,7 +1353,7 @@ export function SettingsPanel({
                   className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-40 transition-colors font-sans"
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Index Custom Docs to Vector Database</span>
+                  <span>{getTranslation(language, "DOCS_HUB_INDEX_CUSTOM_DOCS")}</span>
                 </button>
               </div>
             </div>
@@ -1084,10 +1371,10 @@ export function SettingsPanel({
         {/* Synchronized Live Index Counter */}
         <div className="flex items-center justify-between text-xs p-3.5 rounded-lg border border-zinc-150 dark:border-zinc-850/80 bg-zinc-50/50 dark:bg-zinc-950/30">
           <div className="space-y-0.5">
-            <span className="text-[10px] text-zinc-400 uppercase font-mono block">Relational Offline RAG Engine Vector Bank</span>
-            <span className="text-zinc-800 dark:text-zinc-250 font-bold font-mono text-[13px]">{localVectorCount} Reference Guideline Vectors Loaded</span>
+            <span className="text-[10px] text-zinc-400 uppercase font-mono block">{getTranslation(language, "DOCS_HUB_VECTOR_BANK")}</span>
+            <span className="text-zinc-800 dark:text-zinc-250 font-bold font-mono text-[13px]">{getTranslation(language, "DOCS_HUB_VECTORS_LOADED", { count: localVectorCount.toString() })}</span>
           </div>
-          <span className="text-[10px] text-zinc-400 font-mono">Updates live</span>
+          <span className="text-[10px] text-zinc-400 font-mono">{getTranslation(language, "DOCS_HUB_UPDATES_LIVE")}</span>
         </div>
       </div>
 
