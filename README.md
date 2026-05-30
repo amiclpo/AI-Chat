@@ -1,8 +1,6 @@
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
 </div>
-完全由AI制作的项目，ai个人聊天,支持使用mysql数据库,如果需要更改请前往设置更改,AI开发还有很多不足之处麻烦各位请见谅。
-A project entirely created by AI, AI personal chat, supports using MySQL database. If changes are needed, please go to settings to modify. AI development still has many shortcomings, please bear with us.
 
 # Run and deploy your AI Studio app
 

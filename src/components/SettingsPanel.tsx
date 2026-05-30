@@ -684,7 +684,7 @@ export function SettingsPanel({
   // Submit test connectivity query with input values directly
   const handleTestConnection = async () => {
     if (!mysqlHost || !mysqlUser) {
-      setDbInitMsg({ text: "Please enter host server and user variables to run connectivity test.", isError: true });
+      setDbInitMsg({ text: getTranslation(language, "DB_ENTER_CREDENTIALS_MSG"), isError: true });
       return;
     }
     setDbTesting(true);
@@ -703,15 +703,15 @@ export function SettingsPanel({
       });
       const data = await res.json();
       if (data.success) {
-        setDbInitMsg({ text: data.message || "MySQL Connection established perfectly! Database is online and ready.", isError: false });
+        setDbInitMsg({ text: data.message || getTranslation(language, "DB_CONN_SUCCESS_MSG"), isError: false });
         setMysqlConnected(true);
         setMysqlError(null);
       } else {
-        setDbInitMsg({ text: data.error || "Connection handshake failed. Verify firewall rules and credentials.", isError: true });
+        setDbInitMsg({ text: data.error || getTranslation(language, "DB_CONN_FAILED_MSG"), isError: true });
         setMysqlConnected(false);
       }
     } catch (err: any) {
-      setDbInitMsg({ text: "Test request failed: " + err.message, isError: true });
+      setDbInitMsg({ text: getTranslation(language, "DB_CONN_FAILED_MSG") + " " + err.message, isError: true });
       setMysqlConnected(false);
     } finally {
       setDbTesting(false);
@@ -745,21 +745,21 @@ export function SettingsPanel({
         setUseMysql(useDbVal);
         localStorage.setItem("AIChatLocalRAG_UseMysql", useDbVal ? "true" : "false");
         
-        setDbInitMsg({ text: "MySQL connection rules written to configuration. Pool updated successfully.", isError: false });
+        setDbInitMsg({ text: getTranslation(language, "DB_CONFIG_SAVED_MSG"), isError: false });
 
         if (useDbVal) {
           // Immediately pull existing database state if connection is successful
           if (data.config.connected) {
             await loadAllDataFromDb();
           } else {
-            setDbInitMsg({ text: "Configurations saved, but databank connection is offline. Database mode is activated but may raise transfer limitations.", isError: true });
+            setDbInitMsg({ text: getTranslation(language, "DB_CONFIG_SAVED_OFFLINE_MSG"), isError: true });
           }
         }
       } else {
-        setDbInitMsg({ text: data.error || "Could not successfully save connection pool setup.", isError: true });
+        setDbInitMsg({ text: data.error || getTranslation(language, "DB_SAVE_FAILED_MSG"), isError: true });
       }
     } catch (err: any) {
-      setDbInitMsg({ text: "Failed storing options: " + err.message, isError: true });
+      setDbInitMsg({ text: getTranslation(language, "DB_SAVE_FAILED_MSG") + " " + err.message, isError: true });
     } finally {
       setDbSaving(false);
     }
@@ -775,12 +775,12 @@ export function SettingsPanel({
       });
       const data = await res.json();
       if (data.success) {
-        setDbInitMsg({ text: "Success! Relational templates (sessions, messages, system_prompts, consumption_records) built inside database.", isError: false });
+        setDbInitMsg({ text: getTranslation(language, "DB_TABLE_INIT_SUCCESS_MSG"), isError: false });
       } else {
-        setDbInitMsg({ text: data.error || "Execution failed. Check your user permissions.", isError: true });
+        setDbInitMsg({ text: data.error || getTranslation(language, "DB_TABLE_INIT_FAILED_MSG"), isError: true });
       }
     } catch (err: any) {
-      setDbInitMsg({ text: "Init failure: " + err.message, isError: true });
+      setDbInitMsg({ text: getTranslation(language, "DB_TABLE_INIT_FAILED_MSG") + " " + err.message, isError: true });
     } finally {
       setDbSaving(false);
     }
@@ -788,7 +788,7 @@ export function SettingsPanel({
 
   // Sync current client-side state bulk-wise to MySQL relational tables
   const handleSyncToMySql = async () => {
-    if (!confirm("Are you sure you want to push all offline browser chats, character setting parameters, and consumption metrics into your MySQL database? This will merge and sync records!")) {
+    if (!confirm(getTranslation(language, "DB_SYNC_CONFIRM"))) {
       return;
     }
     setDbSaving(true);
@@ -807,13 +807,13 @@ export function SettingsPanel({
       });
       const data = await res.json();
       if (data.success) {
-        setDbInitMsg({ text: "Excellent! Browser offline data successfully synchronized into relational tables of your MySQL server.", isError: false });
+        setDbInitMsg({ text: getTranslation(language, "DB_SYNC_SUCCESS_MSG"), isError: false });
         await loadAllDataFromDb();
       } else {
-        setDbInitMsg({ text: data.error || "Failed sending local states to server config.", isError: true });
+        setDbInitMsg({ text: data.error || getTranslation(language, "DB_SAVE_FAILED_MSG"), isError: true });
       }
     } catch (err: any) {
-      setDbInitMsg({ text: "Sync operation fail: " + err.message, isError: true });
+      setDbInitMsg({ text: getTranslation(language, "DB_SAVE_FAILED_MSG") + " " + err.message, isError: true });
     } finally {
       setDbSaving(false);
     }
@@ -1327,7 +1327,7 @@ export function SettingsPanel({
                 value={customSupplementText}
                 onChange={(e) => setCustomSupplementText(e.target.value)}
                 placeholder={`-- Example --\n\nFastAPI Style Guidelines: Prefer Async route endpoints over standard Sync interfaces when launching non-blocking operations.\n\nSvelteKit Store Rules: Export writable states with safe unsubscribe calls.`}
-                className="w-full h-[120px] p-2.5 text-xs font-mono rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full h-[120px] p-2.5 text-xs font-mono rounded-lg border border-zinc-200 dark:border-zinc-805 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
               />
 
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2">
@@ -1389,33 +1389,33 @@ export function SettingsPanel({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-zinc-100 dark:border-zinc-805 pb-2">
           <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
             <Database className="w-4 h-4 text-emerald-500" />
-            <span>Relational MySQL Database Integration</span>
+            <span>{getTranslation(language, "DB_INTEGRATION_TITLE")}</span>
           </h3>
           <div className="flex items-center gap-1.5 font-mono text-[11px]">
-            <span className="text-neutral-500 select-none">Status:</span>
+            <span className="text-neutral-500 select-none">{getTranslation(language, "DB_STATUS")}</span>
             {mysqlConnected ? (
               <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
-                ACTIVE & ONLINE
+                {getTranslation(language, "DB_STATUS_ACTIVE")}
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-medium bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded">
                 <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
-                DISCONNECTED
+                {getTranslation(language, "DB_STATUS_DISCONNECTED")}
               </span>
             )}
           </div>
         </div>
 
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Configure a central MySQL database to persist all dialogues (sessions), custom character backgrounds, and consumption telemetry. Replaces localStorage safely once connected.
+          {getTranslation(language, "DB_INTEGRATION_DESC")}
         </p>
 
         {/* Storage Toggle Row */}
         <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200/60 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
             <h4 className="text-xs font-bold text-zinc-700 dark:text-zinc-200 flex items-center gap-1.5">
-              <span>Database Sync Persistence Mode</span>
+              <span>{getTranslation(language, "DB_SYNC_MODE_LABEL")}</span>
               {useMysql && (
                 <span className="text-[9px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-1 rounded uppercase font-bold font-mono">
                   MySQL ON
@@ -1423,7 +1423,7 @@ export function SettingsPanel({
               )}
             </h4>
             <p className="text-[10px] text-zinc-400 dark:text-zinc-500 max-w-lg">
-              When toggled, dialogues, updates, characters, and logs sync directly to MySQL tables. If disabled or disconnected, saves safely to local storage fallback logs.
+              {getTranslation(language, "DB_SYNC_MODE_DESC")}
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer shrink-0 select-none">
@@ -1441,7 +1441,7 @@ export function SettingsPanel({
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 pt-2">
           {/* Host */}
           <div className="sm:col-span-5 space-y-1">
-            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">DB Host IP / URL</label>
+            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">{getTranslation(language, "DB_HOST_LABEL")}</label>
             <input 
               type="text"
               placeholder="e.g. localhost or mysql-server"
@@ -1453,19 +1453,19 @@ export function SettingsPanel({
 
           {/* Port */}
           <div className="sm:col-span-2 space-y-1">
-            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">Port</label>
+            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">{getTranslation(language, "DB_PORT_LABEL")}</label>
             <input 
               type="number"
               placeholder="3306"
               value={mysqlPort}
               onChange={(e) => setMysqlPort(Number(e.target.value) || 3306)}
-              className="w-full p-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-850 dark:text-zinc-200 font-mono focus:border-indigo-500 focus:outline-none"
+              className="w-full p-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-855 dark:text-zinc-200 font-mono focus:border-indigo-500 focus:outline-none"
             />
           </div>
 
           {/* User */}
           <div className="sm:col-span-5 space-y-1">
-            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">Username</label>
+            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">{getTranslation(language, "DB_USER_LABEL")}</label>
             <input 
               type="text"
               placeholder="root"
@@ -1477,7 +1477,7 @@ export function SettingsPanel({
 
           {/* Password */}
           <div className="sm:col-span-6 space-y-1">
-            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">Password</label>
+            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">{getTranslation(language, "DB_PASS_LABEL")}</label>
             <input 
               type="password"
               placeholder="••••••••"
@@ -1489,7 +1489,7 @@ export function SettingsPanel({
 
           {/* Schema Name */}
           <div className="sm:col-span-6 space-y-1">
-            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">Database Name</label>
+            <label className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">{getTranslation(language, "DB_NAME_LABEL")}</label>
             <input 
               type="text"
               placeholder="ai_chat_assistant"
@@ -1505,7 +1505,7 @@ export function SettingsPanel({
           <div className="p-3 text-[11px] text-red-600 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900/30 flex items-start gap-2">
             <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
             <div className="font-mono">
-              <strong>Database Warning:</strong> {mysqlError}
+              <strong>{getTranslation(language, "DB_ERR_LABEL")}</strong> {mysqlError}
             </div>
           </div>
         )}
@@ -1519,7 +1519,7 @@ export function SettingsPanel({
             className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-zinc-100 hover:bg-zinc-205 text-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-205 rounded-lg text-xs font-semibold border border-zinc-200 dark:border-zinc-700 cursor-pointer disabled:opacity-40 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-zinc-500 ${dbTesting ? "animate-spin" : ""}`} />
-            <span>Test Connection</span>
+            <span>{getTranslation(language, "DB_TEST_CONN_BTN")}</span>
           </button>
 
           <button
@@ -1529,7 +1529,7 @@ export function SettingsPanel({
             className="px-4 py-1.8 inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-40 transition-colors"
           >
             <Check className="w-3.5 h-3.5" />
-            <span>Save Credentials</span>
+            <span>{getTranslation(language, "DB_SAVE_CREDENTIALS_BTN")}</span>
           </button>
 
           <button
@@ -1539,7 +1539,7 @@ export function SettingsPanel({
             className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-40 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Auto-Create System SQL Tables</span>
+            <span>{getTranslation(language, "DB_CREATE_TABLES_BTN")}</span>
           </button>
 
           <button
@@ -1548,7 +1548,7 @@ export function SettingsPanel({
             onClick={handleSyncToMySql}
             className="px-3.5 py-1.8 inline-flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 text-indigo-450 rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-40 transition-all font-mono"
           >
-            <span>Sync Browser Chats to MySQL</span>
+            <span>{getTranslation(language, "DB_SYNC_BROWSER_DATA_BTN")}</span>
           </button>
 
           <button
@@ -1556,7 +1556,7 @@ export function SettingsPanel({
             onClick={() => setShowSqlSchema(!showSqlSchema)}
             className="px-3.5 py-1.8 text-xs text-zinc-500 hover:text-zinc-700 inline-flex items-center gap-1 cursor-pointer"
           >
-            <span>{showSqlSchema ? "Hide SQL Script" : "Show SQL Table Schema"}</span>
+            <span>{showSqlSchema ? getTranslation(language, "DB_HIDE_SCHEMA") : getTranslation(language, "DB_SHOW_SCHEMA")}</span>
           </button>
         </div>
 
