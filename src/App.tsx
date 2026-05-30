@@ -32,6 +32,7 @@ import { SubFunctionsPanel } from "./components/SubFunctionsPanel";
 import { AdminPanel } from "./components/AdminPanel";
 import { REF_MODELS, BUILT_IN_PROMPTS, INITIAL_USER_CONFIG } from "./lib/data";
 import { localVectorDb } from "./lib/vectorDb";
+import { generateUUID } from "./lib/uuid";
 import { Language, LANGUAGES, getTranslation } from "./lib/translations";
 
 export function getConversationTitle(num: number): string {
@@ -228,7 +229,7 @@ export default function App() {
       });
 
       if (loadedSessions.length === 0) {
-        const firstId = crypto.randomUUID();
+        const firstId = generateUUID();
         const firstSess: ChatSession = {
           id: firstId,
           title: "Conversation One",
@@ -292,7 +293,7 @@ export default function App() {
           }
         } else {
           // Relational db contains zero dialogues yet: seed one initial conversation
-          const firstId = crypto.randomUUID();
+          const firstId = generateUUID();
           const firstSess: ChatSession = {
             id: firstId,
             title: "Conversation One",
@@ -414,7 +415,7 @@ export default function App() {
 
   // Session Handlers
   const handleNewSession = () => {
-    const newId = crypto.randomUUID();
+    const newId = generateUUID();
     const newSess: ChatSession = {
       id: newId,
       title: getConversationTitle(sessions.length + 1),
@@ -534,7 +535,7 @@ export default function App() {
   };
 
   const handleCreateSessionWithParams = (title: string, modelId: string, systemPromptId: string) => {
-    const newId = crypto.randomUUID();
+    const newId = generateUUID();
     const newSess: ChatSession = {
       id: newId,
       title: title || getConversationTitle(sessions.length + 1),
@@ -598,7 +599,7 @@ export default function App() {
     if (!activeSessionToUse || isLoading) return;
 
     const userMessage: Message = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       role: "user",
       content: rawContent,
       timestamp: new Date().toISOString(),
@@ -720,7 +721,7 @@ export default function App() {
           ((data.candidateTokens * costMeta.outputCostPerMillion) / 1000000);
 
         const modelMessage: Message = {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           role: "model",
           content: data.text,
           timestamp: new Date().toISOString(),
@@ -747,7 +748,7 @@ export default function App() {
 
         // CREATE CONSUMPTION TRANSACTION RECORD
         const nextRecord: ConsumptionRecord = {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           timestamp: new Date().toISOString(),
           chatId: activeSessionToUse.id,
           modelId: activeSessionToUse.modelId,
@@ -804,7 +805,7 @@ export default function App() {
       console.error("General chat submission pipeline failure:", chatError);
       
       const errorMessage: Message = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         role: "model",
         content: `⚠️ **Proxy Communication Error:**\n\n${chatError?.message || "An exception occurred while connecting to our Google GenAI backend proxy. Verify your local network connection, API configuration, or credential validation parameters in Settings > Secrets."}`,
         timestamp: new Date().toISOString(),
@@ -961,7 +962,7 @@ export default function App() {
       const existingIds = new Set(sessions.map((s) => s.id));
       let targetId = backupData.id;
       if (existingIds.has(targetId)) {
-        targetId = crypto.randomUUID();
+        targetId = generateUUID();
         backupData.id = targetId;
         backupData.title = `${backupData.title || "Imported Chat"} (Copy)`;
       }
@@ -1000,9 +1001,9 @@ export default function App() {
         if (data.success && Array.isArray(data.embeddings)) {
           for (let j = 0; j < sliceParagraphs.length; j++) {
             const vectorRecord: VectorRecord = {
-              id: crypto.randomUUID(),
+              id: generateUUID(),
               chatId: activeSession.id,
-              messageId: crypto.randomUUID(),
+              messageId: generateUUID(),
               text: `File Context [${filename}]: ${sliceParagraphs[j]}`,
               embedding: data.embeddings[j],
               timestamp: new Date().toISOString()
@@ -1018,7 +1019,7 @@ export default function App() {
   };
 
   const handleExecuteSubFunction = (systemPromptText: string, userText: string, functionTitle: string) => {
-    const newId = crypto.randomUUID();
+    const newId = generateUUID();
     const customPromptId = `prompt-subfn-${Date.now()}`;
     
     // Register custom persona prompt dynamically

@@ -30,6 +30,7 @@ import { SystemPrompt, ChatSession, ConsumptionRecord, VectorRecord } from "../t
 import { REF_MODELS, BUILT_IN_PROMPTS } from "../lib/data";
 import { Language, LANGUAGES, getTranslation } from "../lib/translations";
 import { localVectorDb } from "../lib/vectorDb";
+import { generateUUID } from "../lib/uuid";
 
 interface LangDocPreset {
   id: string;
@@ -576,9 +577,9 @@ export function SettingsPanel({
           const vector: number[] = Array.isArray(data.embeddings[0]) ? data.embeddings[0] : data.embeddings;
           
           const vectorRecord: VectorRecord = {
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             chatId: targetIngestSessionId,
-            messageId: crypto.randomUUID(),
+            messageId: generateUUID(),
             text: `Manual Reference [${preset.name}]: ${chunk}`,
             embedding: vector,
             timestamp: new Date().toISOString()
