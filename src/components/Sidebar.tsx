@@ -94,6 +94,39 @@ export function Sidebar({
   const [customModelId, setCustomModelId] = useState("gemini-3.5-flash");
   const [customPromptId, setCustomPromptId] = useState("prompt-helpful");
 
+  const startEditing = (id: string, currentTitle: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSessionId(id);
+    setEditTitle(currentTitle);
+  };
+
+  const cancelEditing = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSessionId(null);
+    setEditTitle("");
+  };
+
+  const handleSaveRename = (id: string, e?: React.MouseEvent | React.FormEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const trimmed = editTitle.trim();
+    if (trimmed) {
+      onRenameSession(id, trimmed);
+    }
+    setEditingSessionId(null);
+    setEditTitle("");
+  };
+
+  const handleDeleteClick = (session: ChatSession, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const titleToConfirm = session.title || getTranslation(language, "UNTITLED_CHAT");
+    if (confirm(getTranslation(language, "CONFIRM_DELETE", { title: titleToConfirm }))) {
+      onDeleteSession(session.id);
+    }
+  };
+
   // Long-press gestures tracking
   const [longPressedSessionId, setLongPressedSessionId] = useState<string | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -429,26 +462,89 @@ export function Sidebar({
               const sessionIndex = sessions.findIndex((s) => s.id === session.id);
               const dialogueNumber = sessionIndex !== -1 ? (sessions.length - sessionIndex) : (filteredSessions.indexOf(session) + 1);
               const maskedTitle = `Dialogue #${dialogueNumber}`;
+              const displayTitle = session.title || maskedTitle;
+              const isEditingThis = editingSessionId === session.id;
 
               return (
                 <div
                   key={session.id}
                   className={`group relative flex items-center justify-between p-2 rounded-xl transition-all border ${isActive ? "bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60" : "hover:bg-zinc-150/60 dark:hover:bg-zinc-900/40 border-transparent"} cursor-pointer select-none`}
                   onClick={(e) => {
+                    if (isEditingThis) return;
                     onSelectSession(session.id);
                     setActiveTab("chat");
                     setSidebarOpen(false);
                   }}
                 >
-                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1 relative">
                     <div className={`p-1.5 rounded-lg shrink-0 ${isActive ? "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400"}`}>
                       <MessageSquare className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0 pr-2 flex-1">
-                      <div className="text-xs font-semibold text-zinc-850 dark:text-zinc-200 truncate leading-tight">
-                        {maskedTitle}
-                      </div>
-                      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate leading-snug mt-0.5">
+                      {isEditingThis ? (
+                        <form
+                          onSubmit={(e) => handleSaveRename(session.id, e)}
+                          className="flex items-center gap-1 w-full"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="text"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            className="flex-1 min-w-0 text-xs px-1.5 py-0.5 rounded border border-indigo-400 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-50 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-sans"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Escape") {
+                                setEditingSessionId(null);
+                                setEditTitle("");
+                              }
+                            }}
+                          />
+                          <button
+                            type="submit"
+                            className="p-0.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded transition-colors"
+                            title="Save"
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => cancelEditing(e)}
+                            className="p-0.5 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/40 rounded transition-colors"
+                            title="Cancel"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </form>
+                      ) : (
+                        <div className="flex items-center justify-between gap-1 w-full relative">
+                          <div className="text-xs font-semibold text-zinc-850 dark:text-zinc-200 truncate leading-tight flex-1">
+                            {displayTitle}
+                          </div>
+                          
+                          {/* Hover action overlay */}
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 absolute right-0 top-1/2 -translate-y-1/2 bg-zinc-50 dark:bg-zinc-950 pl-2 rounded-l-lg">
+                            <button
+                              type="button"
+                              onClick={(e) => startEditing(session.id, displayTitle, e)}
+                              className="p-1 text-zinc-500 hover:text-indigo-600 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 rounded transition-colors"
+                              title="Rename"
+                            >
+                              <Edit3 className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteClick(session, e)}
+                              className="p-1 text-zinc-500 hover:text-red-650 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 rounded transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate leading-snug mt-1">
                         {lastMsg}
                       </p>
                       <div className="flex items-center gap-1 text-[9px] text-zinc-450 dark:text-zinc-500 mt-1">
