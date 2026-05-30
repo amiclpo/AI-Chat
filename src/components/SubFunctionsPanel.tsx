@@ -261,6 +261,121 @@ export const AI_SUB_FUNCTIONS: AiFunction[] = [
   }
 ];
 
+const FN_TRANSLATIONS: Record<string, Record<Language, { name: string; description: string }>> = {
+  "fn-summarizer": {
+    en: { name: "Executive Briefing Summarizer", description: "Condense long articles, reports, or research papers into strategic highlights and bullet points." },
+    zh: { name: "高管概要汇报提炼", description: "将长篇文章、报告或研究论文浓缩为战略要点与核心结论。" },
+    es: { name: "Resumen Ejecutivo de Negocios", description: "Condensa artículos largos, informes o papeles de investigación en puntos estratégicos clave." },
+    ja: { name: "エグゼクティブサマリー要約機", description: "長文記事、報告書、研究論文を戦略的なハイライトや要点に凝縮します。" },
+    fr: { name: "Synthèse de Briefing Exécutif", description: "Condensez de longs articles, rapports ou mémoires de recherche en points stratégiques essentiels." }
+  },
+  "fn-polish": {
+    en: { name: "Grammar & Style Polisher", description: "Refine word choice, elevate sentence pacing, and eliminate spelling/grammar flaws." },
+    zh: { name: "文案语法与风格润色", description: "精心雕琢字词、优化句子节奏并根除拼写与语法错漏。" },
+    es: { name: "Pulidor de Gramática y Estilo", description: "Refina la selección de palabras, mejora el ritmo y elimina imperfecciones gramaticales." },
+    ja: { name: "校正・文章スタイル調整", description: "言葉の選択を洗練し、文のテンポを高め、つづりや文法の誤りを一送します。" },
+    fr: { name: "Polisseur de Style et Grammaire", description: "Affinez le choix des mots, améliorez le rythme des phrases et éliminez les erreurs." }
+  },
+  "fn-coder": {
+    en: { name: "Smart Code Synthesizer", description: "Generate robust TypeScript, React, SQL, HTML, or CSS code snippets with documentation." },
+    zh: { name: "智能代码自动合成", description: "自动生成健壮、类型安全且包含详实注释的 React/TypeScript/SQL 代码库。" },
+    es: { name: "Sintetizador de Código Inteligente", description: "Genera fragmentos de código robustos en TypeScript, React, SQL o CSS con documentación." },
+    ja: { name: "スマートコード自動生成", description: "注釈付きの堅牢な TypeScript、React、SQL、HTML、CSS のコードコードを生成します。" },
+    fr: { name: "Synthétiseur de Code Intelligent", description: "Générez des fragments de code TypeScript, React, SQL, HTML ou CSS robustes et documentés." }
+  },
+  "fn-translator": {
+    en: { name: "Contextual Translator", description: "Bridge communication with idiomatic translations rather than literal word-to-word transfers." },
+    zh: { name: "情境化地道翻译官", description: "打破生硬的字面直译桎梏，结合地域文化与行文语气进行润色直译。" },
+    es: { name: "Traductor de Contexto Idiomático", description: "Escribe traducciones fluidas y naturales en lugar de realizar una traducción literal." },
+    ja: { name: "コンテキスト翻訳機", description: "逐語的な直訳ではなく、文化的・対話のコンテキストに則した表現で翻訳します。" },
+    fr: { name: "Traducteur de Contexte", description: "Rapprochez la communication grâce à des expressions naturelles plutôt que des traductions littérales." }
+  },
+  "fn-socratic": {
+    en: { name: "Socratic Method Tutor", description: "Master difficult scientific or humanities principles through structured Socratic tutoring." },
+    zh: { name: "苏格拉底智慧导师", description: "不直接给你现成答案，而是通过精准启发连问助你彻底理解复杂学术原理。" },
+    es: { name: "Tutor del Método Socrático", description: "Domina principios complejos de ciencias o humanidades mediante preguntas reflexivas." },
+    ja: { name: "ソクラテス式知的対話チューター", description: "直接答えを与えず、綿密な対話型質問を通じて深い学術的・人文的理解へと導きます。" },
+    fr: { name: "Tuteur de Méthode Socratique", description: "Maîtrisez des concepts complexes de manière rigoureuse grâce à un questionnement guidé." }
+  },
+  "fn-copywriter": {
+    en: { name: "Creative Copywriter", description: "Generate viral social media captions, landing page copy, or email subject lines that convert." },
+    zh: { name: "爆款硬核创意文案", description: "打造极具粘性与心理推力的社交媒体文体、落地页标题或引流点击标题。" },
+    es: { name: "Redactor Creativo con Conversión", description: "Genera textos de alta interacción para redes, títulos de páginas de destino y ganchos." },
+    ja: { name: "バズワード・クリエイティブ文章", description: "思わずクリックしたくなる見出しや、SNSテキスト、LPキャッチコピーを創出します。" },
+    fr: { name: "Concepteur Rédacteur Créatif", description: "Générez des accroches virales, des textes de pages de vente ou des objets d'emails percutants." }
+  },
+  "fn-email": {
+    en: { name: "Executive Email Composer", description: "Draft professional out-of-office plans, business proposals, sales pitches, or polite replies." },
+    zh: { name: "商务行政邮件拟定", description: "编撰得体、凝练、直击业务痛点的专业公文信函及回复邮件。" },
+    es: { name: "Redactor de Correos Ejecutivos", description: "Redacta correos de negocios pulidos, propuestas comerciales o actualizaciones de estado." },
+    ja: { name: "ビジネス事務メール作成", description: "洗練され、要点が極めて明確に伝わるビジネス公用電子メールを起草します。" },
+    fr: { name: "Compositeur d'Emails Professionnels", description: "Rédigez des propositions commerciales, newsletters ou réponses courtoises à forte valeur ajoutée." }
+  },
+  "fn-meetings": {
+    en: { name: "Meeting Minute Processor", description: "Convert chaotic raw speaker transcripts into clean briefs, action matrices, and milestones." },
+    zh: { name: "混乱会议纪要精细归纳", description: "将会议发言速记日志快速收纳为做成清晰的决议流水、跟进排期与里程碑。" },
+    es: { name: "Procesador de Minutas de Reunión", description: "Convierte transcripciones confusas en planes de acción, fechas de entrega y dueños de tareas." },
+    ja: { name: "会議議事録・タスク自動編成", description: "雑多な発言記録や音声を、タスク一覧、担当者マトリクス、決定事項へと集約します。" },
+    fr: { name: "Rédacteur de Compte-Rendu", description: "Transformez les notes de réunions brutes en synthèses claires, tableaux de tâches et jalons." }
+  },
+  "fn-recipe": {
+    en: { name: "Dietary Ingredient Chef", description: "Design healthy, balanced culinary recipes using whatever remains in your kitchen cupboard." },
+    zh: { name: "冰箱剩菜健康大厨", description: "根据您冰箱现存的边角食材与调料，量身构思合理的创意菜品与卡路里折算。" },
+    es: { name: "Chef Creativo de Despensa", description: "Diseña recetas saludables y balanceadas usando lo que te quede disponible en la despensa." },
+    ja: { name: "冷蔵庫の残り物シェフ", description: "おうちにある残り物食材を使って、美味しく健康的なプロのレシピを考案します。" },
+    fr: { name: "Chef Anti-Gaspillage", description: "Créez des recettes équilibrées et saines à partir des restes de votre cuisine." }
+  },
+  "fn-flashcard": {
+    en: { name: "Study Flashcard Architect", description: "Synthesize study terminology, math formulas, or tech glossary terms into crisp exam cards." },
+    zh: { name: "备考记忆卡片架构师", description: "将厚重晦涩的学术笔记提炼为正反面特征鲜明的备考自测闪卡进行冲刺记忆。" },
+    es: { name: "Arquitecto de Fichas de Memoria", description: "Sintetiza términos y fórmulas densos en juegos interactivos de autoevaluación rápida." },
+    ja: { name: "試験対策フラッシュカード設計", description: "覚えづらい専門用語や数学・科学の公式を、効率の良い暗記用カードに書き起こします。" },
+    fr: { name: "Créateur de Fiches Flash", description: "Transformez vos cours ou formules techniques en fiches mémo interactives adaptées." }
+  },
+  "fn-sentiment": {
+    en: { name: "Mood & Sentiment Tracker", description: "Deconstruct personal journals or customer feedback to isolate core emotional states and trends." },
+    zh: { name: "情感波动与情绪审计", description: "深度扫描私人日记、会客交谈或客户投诉，量化情绪走势并给出关怀建议。" },
+    es: { name: "Analizador de Sentimiento y Ánimo", description: "Detecta sesgos emocionales en transcripciones, diarios o comentarios de servicios." },
+    ja: { name: "感情トーン・センチメント分析", description: "日常の日誌や顧客レビューから内包する精神的トーンや感情比率を可視化します。" },
+    fr: { name: "Analyseur de Sentiments", description: "Analysez de longs retours clients ou des journaux intimes pour extraire les émotions dominantes." }
+  },
+  "fn-interview": {
+    en: { name: "Virtual Interview Simulator", description: "Rehearse responses to high-stakes interview questions with professional contextual critiques." },
+    zh: { name: "AI 仿真模拟面试考官", description: "根据您心仪的职级和企业，发起一对一追问演练，并获得多维度专业点评。" },
+    es: { name: "Simulador Virtual de Entrevistas", description: "Ensaya respuestas de negocios para roles críticos con retroalimentación profesional instantánea." },
+    ja: { name: "バーチャル模擬面接官", description: "目指すポジションや企業に完全に合わせた1対1の質問追及と採点評価を行います。" },
+    fr: { name: "Simulateur d'Entretien d'Embauche", description: "Entraînez-vous à répondre à des questions difficiles avec des critiques constructives en temps réel." }
+  },
+  "fn-itinerary": {
+    en: { name: "Adaptive Travel Concierge", description: "Generate highly optimized hourly travel schedules with local highlights, transport, and reviews." },
+    zh: { name: "个性化定制旅行游记", description: "定制科学的时段出行攻略、包含交通工具转换、特色名小吃推荐及时间缓冲区。" },
+    es: { name: "Conserje de Viajes Adaptativo", description: "Diseña itinerarios diarios completos optimizando el tiempo, transporte y recomendaciones." },
+    ja: { name: "トラベル計画・ガイドコンシェルジュ", description: "交通機関や美味しい食べ物の穴場など、時間単位で最適化された旅行スケジュールを自動編成します。" },
+    fr: { name: "Concierge de Voyage Adaptatif", description: "Générez des plannings journaliers de voyage optimisés avec des escales gastronomiques." }
+  },
+  "fn-keywords": {
+    en: { name: "SEO Metadata & Tag Analyst", description: "Extract high-density search keywords, write custom meta-tags, and draft descriptions." },
+    zh: { name: "SEO 元数据与高浓标签分析", description: "解析内容段落，挖掘最贴切的用户检索关键词，并提供能够吸引点击的标题设计。" },
+    es: { name: "Analista de Etiquetas SEO", description: "Extrae palabras clave primarias y redacta descripciones con alta tasa de clicks." },
+    ja: { name: "SEOメタデータ・タグ分析機", description: "コラムやサイトから自動でキーワードを選択し、クリック率を最大化する見出しを作ります。" },
+    fr: { name: "Analyseur de Balises et Mots-clés SEO", description: "Extrayez des mots-clés haute densité et formulez des méta-descriptions optimisées." }
+  },
+  "fn-json": {
+    en: { name: "Structured JSON Reformatter", description: "Clean up malformed JSON objects, resolve indentation, and generate clean types declarations." },
+    zh: { name: "JSON 数据流清洗与规整", description: "一键修缮多余逗号、剔除报错括号、纠正错乱缩进并生成标准 TS 定义。" },
+    es: { name: "Reformateador de JSON Estructurado", description: "Corrige comas rotas, brackets corruptos y genera tipos directos en TypeScript." },
+    ja: { name: "JSON構文バグ修正・フォーマッタ", description: "余計なカンマや欠損した括弧を自動修復し、美しいインデントで整形式定義を出力します。" },
+    fr: { name: "Réformateur de Fichiers JSON", description: "Corrigez les virgules superflues, indentez vos structures de données et générez des interfaces TypeScript." }
+  },
+  "fn-ragcompanion": {
+    en: { name: "RAG Vector Companion", description: "Retrieve vector intelligence and extract context files from your local database." },
+    zh: { name: "RAG 本地知识检索罗盘", description: "穿透离线数据层，精准调度、关联对比您的私人本地文档并生成附带引用的答复。" },
+    es: { name: "Compañero RAG de Inteligencia Local", description: "Consulta las bases de conocimientos de tus archivos corporativos adjuntando citas explícitas." },
+    ja: { name: "オフラインRAG知識検索コンパス", description: "読み込んだドキュメントやファイル群から横断検索し、参照元を明示した高信頼性の回答を得ます。" },
+    fr: { name: "Compagnon d'Indexation RAG", description: "Interrogez l'index de connaissances local pour croiser vos documents d'entreprise avec citation de sources." }
+  }
+};
+
 export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<"all" | "writing" | "code" | "productivity" | "lifestyle" | "advanced">("all");
@@ -281,7 +396,8 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
   };
 
   const handleRun = (fn: AiFunction) => {
-    let combinedPrompt = `## ${fn.name} Action Task\n`;
+    const meta = FN_TRANSLATIONS[fn.id]?.[language] || { name: fn.name, description: fn.description };
+    let combinedPrompt = `## ${meta.name} Action Task\n`;
     
     // Aggregate all defined inputs
     fn.inputs.forEach((input) => {
@@ -292,25 +408,26 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
     const coreContent = getInputValue(fn.id, "content", "");
     combinedPrompt += `\n### User Sub-Function Request Body:\n${coreContent}\n`;
 
-    onExecuteFunction(fn.systemPrompt, combinedPrompt, fn.name);
+    onExecuteFunction(fn.systemPrompt, combinedPrompt, meta.name);
   };
 
   const filteredFunctions = AI_SUB_FUNCTIONS.filter((fn) => {
+    const meta = FN_TRANSLATIONS[fn.id]?.[language] || { name: fn.name, description: fn.description };
     const matchesSearch = 
-      fn.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      fn.description.toLowerCase().includes(searchQuery.toLowerCase());
+      meta.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      meta.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesCategory = activeCategory === "all" || fn.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
   const categoriesList = [
-    { id: "all", label: "All Functions", count: AI_SUB_FUNCTIONS.length },
-    { id: "writing", label: "Writing & Prose", count: AI_SUB_FUNCTIONS.filter(f => f.category === "writing").length },
-    { id: "code", label: "Code & Structure", count: AI_SUB_FUNCTIONS.filter(f => f.category === "code").length },
-    { id: "productivity", label: "Office Productivity", count: AI_SUB_FUNCTIONS.filter(f => f.category === "productivity").length },
-    { id: "lifestyle", label: "Study & Life", count: AI_SUB_FUNCTIONS.filter(f => f.category === "lifestyle").length },
-    { id: "advanced", label: "Cognitive Intelligence", count: AI_SUB_FUNCTIONS.filter(f => f.category === "advanced").length },
+    { id: "all", label: getTranslation(language, "SUB_FUNCTIONS_CAT_ALL"), count: AI_SUB_FUNCTIONS.length },
+    { id: "writing", label: getTranslation(language, "SUB_FUNCTIONS_CAT_WRITING"), count: AI_SUB_FUNCTIONS.filter(f => f.category === "writing").length },
+    { id: "code", label: getTranslation(language, "SUB_FUNCTIONS_CAT_CODE"), count: AI_SUB_FUNCTIONS.filter(f => f.category === "code").length },
+    { id: "productivity", label: getTranslation(language, "SUB_FUNCTIONS_CAT_PRODUCTIVITY"), count: AI_SUB_FUNCTIONS.filter(f => f.category === "productivity").length },
+    { id: "lifestyle", label: getTranslation(language, "SUB_FUNCTIONS_CAT_STUDY"), count: AI_SUB_FUNCTIONS.filter(f => f.category === "lifestyle").length },
+    { id: "advanced", label: getTranslation(language, "SUB_FUNCTIONS_CAT_COGNITIVE"), count: AI_SUB_FUNCTIONS.filter(f => f.category === "advanced").length },
   ];
 
   return (
@@ -320,10 +437,10 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
         <div>
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-indigo-500 animate-pulse" />
-            AI Sub-Functions Menu
+            {getTranslation(language, "SUB_FUNCTIONS_TITLE")}
           </h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Deploy over fifteen high-performance micro-utilities configured with surgically tuned system templates.
+            {getTranslation(language, "SUB_FUNCTIONS_SUBTITLE")}
           </p>
         </div>
 
@@ -334,7 +451,7 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search specialized sub-functions..."
+            placeholder={getTranslation(language, "SUB_FUNCTIONS_SEARCH_PLACEHOLDER")}
             className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400"
           />
         </div>
@@ -364,6 +481,8 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
         {filteredFunctions.map((fn) => {
           const Icon = fn.icon;
           const isExpanded = selectedFnId === fn.id;
+          const meta = FN_TRANSLATIONS[fn.id]?.[language] || { name: fn.name, description: fn.description };
+
           return (
             <div
               key={fn.id}
@@ -380,7 +499,12 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs uppercase font-bold tracking-wider text-indigo-500 dark:text-indigo-400">
-                      {fn.category}
+                      {fn.category === "writing" ? getTranslation(language, "SUB_FUNCTIONS_CAT_WRITING")
+                       : fn.category === "code" ? getTranslation(language, "SUB_FUNCTIONS_CAT_CODE")
+                       : fn.category === "productivity" ? getTranslation(language, "SUB_FUNCTIONS_CAT_PRODUCTIVITY")
+                       : fn.category === "lifestyle" ? getTranslation(language, "SUB_FUNCTIONS_CAT_STUDY")
+                       : fn.category === "advanced" ? getTranslation(language, "SUB_FUNCTIONS_CAT_COGNITIVE")
+                       : fn.category}
                     </span>
                     {!isExpanded && (
                       <div className="p-1 rounded-full group-hover:bg-zinc-100 text-zinc-400 group-hover:text-zinc-650 transition-all">
@@ -388,9 +512,9 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
                       </div>
                     )}
                   </div>
-                  <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{fn.name}</h3>
+                  <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{meta.name}</h3>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-sans mt-1">
-                    {fn.description}
+                    {meta.description}
                   </p>
                 </div>
               </div>
@@ -398,9 +522,9 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
               {/* Collapsed view CTA */}
               {!isExpanded && (
                 <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-850/40 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500 font-medium">
-                  <span>Standard execution</span>
+                  <span>{getTranslation(language, "SUB_FUNCTIONS_STANDARD_EXECUTION")}</span>
                   <span className="flex items-center gap-1 text-indigo-500 dark:text-indigo-400 font-semibold">
-                    Open Task Form <ChevronRight className="w-3.5 h-3.5" />
+                    {getTranslation(language, "SUB_FUNCTIONS_OPEN_FORM")} <ChevronRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
               )}
@@ -415,14 +539,14 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50 dark:bg-indigo-950/20 px-2.5 py-1 rounded-lg">
                         <Zap className="w-3 h-3 text-indigo-500 shrink-0" />
-                        <span>Surgically configured prompt template</span>
+                        <span>{getTranslation(language, "SUB_FUNCTIONS_PROMPT_TEMPLATE")}</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => setSelectedFnId(null)}
                         className="text-xs font-semibold text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800"
                       >
-                        Collapse Form
+                        {getTranslation(language, "SUB_FUNCTIONS_COLLAPSE_FORM")}
                       </button>
                     </div>
 
@@ -484,7 +608,7 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
                       }}
                       className="px-3.5 py-1.5 text-xs text-zinc-650 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 font-semibold rounded-lg cursor-pointer"
                     >
-                      Clear Inputs
+                      {getTranslation(language, "SUB_FUNCTIONS_CLEAR_INPUTS")}
                     </button>
                     <button
                       type="button"
@@ -492,7 +616,7 @@ export function SubFunctionsPanel({ onExecuteFunction, language }: SubFunctionsP
                       className="px-4 py-2 bg-indigo-650 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl cursor-pointer shadow flex items-center gap-1.5 hover:-translate-y-0.5 transition-transform"
                     >
                       <Send className="w-3.5 h-3.5 shrink-0" />
-                      <span>Execute in AI workspace</span>
+                      <span>{getTranslation(language, "SUB_FUNCTIONS_EXECUTE")}</span>
                     </button>
                   </div>
                 </div>
